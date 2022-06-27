@@ -151,7 +151,7 @@ char *encrypt(char * message)
     long int pt1, pt2; // pointer1 , pointer2
     long int len = strlen(message);
     printf("Message to encrypt: %s, size: %d\n", message, len);
-    char * encrypted_msg = (char *)malloc(len);
+    int * encrypted_msg = (int *)malloc(len *sizeof(int));
     int i = 0;
     while (i < len)
     {
@@ -163,7 +163,6 @@ char *encrypt(char * message)
         // The correct form is: encryp[i] = pt2; (But json can not encode it so we let encrypt1 = 'some random string')
         encrypted_msg[i] = pt2;
         printf("i: %d, pt2: %d, pt1: %d\n", i, pt2, pt1);
-
         i++;
     }
     /*
@@ -174,8 +173,12 @@ char *encrypt(char * message)
         printf("%c, ",message[i]);
     }*/
     size_t message_size = strlen(message);
-    char * encode_data = base64_encode(encrypted_msg, len, &len);
+    char * encode_data = base64_encode(encrypted_msg, len *sizeof(int), &len);
+    printf("len size: %d\n", len);
+    printf("len size of int: %d\n", len *sizeof(int));
+
     printf("After encoding: %s\n", encode_data);
+    free(encrypted_msg);
     return encode_data;
     //printf("\nAfter base64 encode: \n");
     
@@ -194,15 +197,13 @@ char *decrypt(char *message) // Base64 message
     size_t *decoded_size = (size_t *)malloc(sizeof(size_t));
     printf("Message size: %ld\n", message_size);
     printf("Message: %s\n", message);
-    unsigned char *decode_data = base64_decode(message, message_size, decoded_size);
-    printf("Finish decoding, %ld\n", (*decoded_size));
-    // for(int j =0 ; message[j] != '\0'; j++)
-    // {
-    //     message[j] = decode_data[j];
-    // }
-    // printf("Finish copying\n");
+    int *decode_data = (int *)malloc(message_size *sizeof(int));
 
-    // while (decryp[i] != -1)
+    decode_data = (int *)base64_decode(message, message_size, decoded_size);
+    printf("Finish decoding, %ld\n", (*decoded_size));
+    printf("decryp[13]: %d\n",decode_data[13]);
+    printf("decryp[14]: %d\n",decode_data[14]);
+
     for (i; i < (*decoded_size); i++)
     {
         pt2 = decode_data[i];
@@ -212,13 +213,14 @@ char *decrypt(char *message) // Base64 message
         printf("i: %d, pt2: %d, pt1: %d\n", i, pt2, pt1);
 
     }
+    free(decode_data);
     printf("Decryption result: %s\n", decryp);
     return decryp;
 }
 
 void Gen_key()
 {
-    int p = 11;
+    int p = 31;
     int q = 23;
     long int n = (p - 1) * (q - 1);
     m = p * q;
