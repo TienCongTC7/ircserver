@@ -64,7 +64,6 @@ int main(int argc, char **argv)
     stdin_pollfd.events = POLLIN;
 
     int running = 1;
-    char message[1024];
 
     printf("Listening on port %d...\n", port);
 
@@ -142,6 +141,7 @@ int main(int argc, char **argv)
 
                     // Handle all server logic
                     handle_request(message, clientfds[i]);
+                    memset(encryp, sizeof(encryp),0);
                 }
                 else if (read_status == 0)
                 {
